@@ -16,14 +16,14 @@ library only — no external dependencies.
 Requires JDK 16 or newer (the code uses `var` and `Stream.toList()`).
 
 ```bash
-javac -d out $(find . -name "*.java")
+javac -d out $(find src -name "*.java")
 java -cp out App
 ```
 
 On Windows, without a POSIX shell:
 
 ```powershell
-javac -d out (Get-ChildItem -Recurse -Filter *.java | ForEach-Object FullName)
+javac -d out (Get-ChildItem src -Recurse -Filter *.java | ForEach-Object FullName)
 java -cp out App
 ```
 
@@ -166,46 +166,47 @@ device that was still alive. For each device, in order:
 ## Project layout
 
 ```
-App.java                          entry point, starts the window
-
-Common/                           the base types the network is built on
-  Device.java                     anything owning a phone number
-  DeviceListener.java             events of a single device
-  BaseDeviceListener.java         empty listener, for overriding one event
-  DeviceLayer.java                a group of devices of one kind
-  DeviceLayerListener.java        events of a layer
-  BaseDeviceLayerListener.java    empty layer listener
-  DeviceLayerEvent.java           carries the device that was added or removed
-  SMSEvent.java                   carries one encoded message
-  Station.java                    a station with its queue and its own thread
-  StationLayer.java               a column of stations, balances the load
-
-Models/                           the concrete network
-  VBD.java                        sending device, one thread each
-  VBDLayer.java                   all senders, writes the report on exit
-  VBDStateEnum.java               Active or Waiting
-  VRD.java                        receiving device, counts what arrives
-  VRDLayer.java                   all receivers, delivers by number
-  VRDNumberProvider.java          lets a sender ask for a recipient
-  BTS.java                        base station, holds a message 3 s
-  BTSLayer.java                   a column of BTS stations
-  BSC.java                        controller, holds a message 5-14 s
-  BSCLayer.java                   a column of BSC stations, knows its neighbours
-  BSCLayers.java                  the chain of BSC layers the user changes
-  BSCLayersListener.java          events of that chain
-  BSCLayersEvent.java             carries the layer that was added or removed
-
-SMS/                              the message format
-  PDU.java                        builds and reads SMS-DELIVER structures
-  HEX.java                        bytes to hexadecimal text and back
-
-Presentation/                     the user interface
-  MainFrame.java                  the window, and where the network is wired up
-  VBDLayerPanel.java              left panel, the list of senders
-  VBDPanel.java                   one sender: slider, number, state, terminate
-  VRDLayerPanel.java              right panel, the list of receivers
-  VRDPanel.java                   one receiver: number, counter, terminate
-  BSCLayersPanel.java             middle panel, all BSC layers side by side
-  StationLayerPanel.java          one column of stations
-  StationPanel.java               one station: number, processed, waiting
+src/
+├── App.java                          entry point, opens the window
+│
+├── Common/                           the base types the network is built on
+│   ├── Device.java                   anything owning a phone number
+│   ├── DeviceListener.java           events of a single device
+│   ├── BaseDeviceListener.java       empty listener, for overriding one event
+│   ├── DeviceLayer.java              a group of devices of one kind
+│   ├── DeviceLayerListener.java      events of a layer
+│   ├── BaseDeviceLayerListener.java  empty layer listener
+│   ├── DeviceLayerEvent.java         carries the device that was added or removed
+│   ├── SMSEvent.java                 carries one encoded message
+│   ├── Station.java                  a station with its queue and its own thread
+│   └── StationLayer.java             a column of stations, balances the load
+│
+├── Models/                           the concrete network
+│   ├── VBD.java                      sending device, one thread each
+│   ├── VBDLayer.java                 all senders, writes the report on exit
+│   ├── VBDStateEnum.java             Active or Waiting
+│   ├── VRD.java                      receiving device, counts what arrives
+│   ├── VRDLayer.java                 all receivers, delivers by number
+│   ├── VRDNumberProvider.java        lets a sender ask for a recipient
+│   ├── BTS.java                      base station, holds a message 3 s
+│   ├── BTSLayer.java                 a column of BTS stations
+│   ├── BSC.java                      controller, holds a message 5-14 s
+│   ├── BSCLayer.java                 a column of BSC stations, knows its neighbours
+│   ├── BSCLayers.java                the chain of BSC layers the user changes
+│   ├── BSCLayersListener.java        events of that chain
+│   └── BSCLayersEvent.java           carries the layer that was added or removed
+│
+├── SMS/                              the message format
+│   ├── PDU.java                      builds and reads SMS-DELIVER structures
+│   └── HEX.java                      bytes to hexadecimal text and back
+│
+└── Presentation/                     the user interface
+    ├── MainFrame.java                the window, and where the network is wired up
+    ├── VBDLayerPanel.java            left panel, the list of senders
+    ├── VBDPanel.java                 one sender: slider, number, state, terminate
+    ├── VRDLayerPanel.java            right panel, the list of receivers
+    ├── VRDPanel.java                 one receiver: number, counter, terminate
+    ├── BSCLayersPanel.java           middle panel, all BSC layers side by side
+    ├── StationLayerPanel.java        one column of stations
+    └── StationPanel.java             one station: number, processed, waiting
 ```
